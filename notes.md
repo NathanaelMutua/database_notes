@@ -18,14 +18,25 @@ Atomicity is a property of databases that ensures that a transaction, as a whole
 
 It prevents partial or fractional implementation.
 
-If a transaction was nit treated atomically it would lead to inaccurate data, data inconsistencies and partial updates.
+If a transaction was not treated atomically it would lead to inaccurate data, data inconsistencies and partial updates.
 
 #### Example1
 
 > *In a bank, money transfers between 2 accounts*
 > If from the sender, the operation is successful, and the receiving operation fails, then the entire transaction will be rolled back, and the first account will not be charged.
 
+We accomplish atomicity through defining transaction boundaries, with commands like ```BEGIN```.
+
 #### Practical Example(Atomicity)
+
+In the example below, if the transaction does not work out, a rollback occurs, ensuring atomicity.
+
+```sql
+BEGIN TRANSACTION;
+UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
+COMMIT;
+```
 
 Databases use methods such as transaction logs, and rollback processes to maintain atomicity.
 
@@ -47,8 +58,6 @@ If the rules are not followed, the transaction is cancelled.
 
 Consistency is enforced through validation keys, database triggers, and constraints...these ensure the logical rules at the database level.
 
-#### Practical Example(Consistency)
-
 ### ISOLATION
 
 This is a property of ACID in a database that ensures that transactions execute independently without interrupting or affecting each other.
@@ -58,13 +67,41 @@ This is a property of ACID in a database that ensures that transactions execute 
 
 #### Isolation levels
 
-- Read committed
-- Read repeatable
-- Serializable
+These levels help in determining the level of separation between transactions.
+
+- Read uncommitted: this is the lowest level and transactions may lead to 'dirty reads'.
+- Read committed: transactions here can only access committed data, which leads to less 'dirty leads' but not 'phantom reads'.
+- Repeatable Read: This ensures consistency
+- Serializable: This is the highest level, and this fully isolates the transactions.
+    It prevents 'dirty reads', 'non-repeatable reads', and 'phantom reads' by locking data
+
+Here are **references**:
+
+- Dirty Reads: Is when a transaction reads data that has been modified by another transaction, but hasn't been committed.
+- Non-repeatable Reads: This usually happens when a transaction reads the same row twice and gets different values.
+- Phantom Reads: these occurs when, in the course of a transaction, two identical queries are executed, and the collection of rows returned by the second query is different from the first.
 
 Isolation is achieved through locking protocols, which prevents concurrent access to the same data.
 
 #### Practical Example(Isolation)
+
+Using Repeatable Read:
+
+```sql
+-- Transaction 1
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
+BEGIN TRANSACTION
+SELECT Quantity FROM Products WHERE Id = 1001
+
+-- Here there be some delay as we assume were doing something else
+WAITFOR DELAY '00:00:15'
+SELECT Quantity FROM Products WHERE Id = 1001
+COMMIT TRANSACTION
+
+-- Transaction 2
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
+UPDATE Products SET Quantity = 5 WHERE Id = 1001
+```
 
 ### DURABILITY
 
@@ -76,9 +113,26 @@ Durability is accomplished through write-ahead logging, and backup mechanisms. T
 
 ### Practical Example(Durability)
 
+We use write-ahead logging, which writes changes to a log before applying them to the database.
+
+```sql
+ALTER SYSTEM SET wal_level = 'replica';
+```
+
+We also use ```COMMIT``` to log changes.
+
+```sql
+BEGIN TRANSACTION;
+
+INSERT INTO orders (order_id, customer_id, amount)
+VALUES (1, 101, 500);
+
+COMMIT;
+```
+
 ### Advantages of ACID properties
 
-- Concurrency control: 
+- Concurrency control.
 - Recovery: ensure that in case of an issue, the data of the database can be recovered, before the point of failure.
 - Ensure data integrity: they cannot lose the changes made to the database.
 - They ensure data consistency: where data remains accurate after all transactions and operations.
