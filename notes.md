@@ -1,4 +1,4 @@
-# Notes on Normalization and ACID  Properties
+# Notes on Normalization and ACID Properties
 
 ## ACID PROPERTIES
 
@@ -8,7 +8,7 @@ They are a set of properties that ensure reliable processing of database transac
 
 They define how transactions should be handled in a reliable manner, ensuring the database is consistent even when there are issues or concurrent access.
 
-> *Transactions* are operations performed as a a single unit in a database, such as reading and writing data in a database.
+> _Transactions_ are operations performed as a a single unit in a database, such as reading and writing data in a database.
 
 ### ATOMICITY
 
@@ -22,10 +22,10 @@ If a transaction was not treated atomically it would lead to inaccurate data, da
 
 #### Example1
 
-> *In a bank, money transfers between 2 accounts*
+> _In a bank, money transfers between 2 accounts_
 > If from the sender, the operation is successful, and the receiving operation fails, then the entire transaction will be rolled back, and the first account will not be charged.
 
-We accomplish atomicity through defining transaction boundaries, with commands like ```BEGIN```.
+We accomplish atomicity through defining transaction boundaries, with commands like `BEGIN`.
 
 #### Practical Example(Atomicity)
 
@@ -73,7 +73,7 @@ These levels help in determining the level of separation between transactions.
 - Read committed: transactions here can only access committed data, which leads to less 'dirty leads' but not 'phantom reads'.
 - Repeatable Read: This ensures consistency
 - Serializable: This is the highest level, and this fully isolates the transactions.
-    It prevents 'dirty reads', 'non-repeatable reads', and 'phantom reads' by locking data
+  It prevents 'dirty reads', 'non-repeatable reads', and 'phantom reads' by locking data
 
 Here are **references**:
 
@@ -119,7 +119,7 @@ We use write-ahead logging, which writes changes to a log before applying them t
 ALTER SYSTEM SET wal_level = 'replica';
 ```
 
-We also use ```COMMIT``` to log changes.
+We also use `COMMIT` to log changes.
 
 ```sql
 BEGIN TRANSACTION;
@@ -142,7 +142,7 @@ COMMIT;
 - Scalability Difficulty, especially when it's a system with high volume rates.
 - Performance Overhead: it takes a lot of processing and expertise to enforce isolation and all the properties simultaneously.
 
--------
+---
 
 ## NORMALIZATION IN DATABASES
 
@@ -150,4 +150,85 @@ Normalization, is simply the process in which we get rid of redundancy in a data
 
 To achieve this we structure the data in such a way that attributes are grouped with the primary key that provides unique identification.
 
-**Un-normalized** data is usually a combo of a variety columns representing different entities, usually this can be quite disorganized, or too much information
+> On a light note, you'll realize that it's all about simplifying the table and column structures, which usually means making new tables from larger tables. No biggie.
+
+**Un-normalized** data is usually a combo of a variety columns representing different entities, usually this can be quite disorganized, or too much information.
+
+Just to note:_Sometimes un-normalized/denormalized is needed for data analysis_
+
+### Reasons for Normalization
+
+Normalization's main goal is to **eliminate duplicate data** and ensure everything is stored in a logical way.
+Normalization ensures dependencies for tables and columns are enforced by database integrity constraints (simply Primary and Foreign keys).
+
+### Levels of Normalization
+
+Normalization has several levels which fix specific types of redundancy and dependencies in a database.
+
+Common forms:
+
+- 1NF
+- 2NF
+- 3NF
+
+Higher forms:
+
+- BCNF-Boyce Codd Normal Form
+- 4NF
+- 5NF
+
+#### First Normal Form
+
+Ensures that the database tables are organized in such a way that each column contains atomic (indivisible) values.
+
+Each record should be unique.
+
+This eliminates repeating groups(transitive dependencies), and hence structuring the database into tables and columns.
+
+> **Transitive dependencies:** This is a dependency that occurs when a non-key attribute depends on another non-key attribute, which now depends on the primary key.
+
+#### Second Normal Form
+
+This is an improvement of 1NF, where we need to remove redundant data from a table that is being applied to multiple rows, then we place them in separate tables.
+
+This usually requires all non-key attributes to be fully functional on the primary key.
+
+This eliminates partial dependencies.
+
+> **Partial dependency:** This is a situation that occurs when a non-prime attribute (i.e., not part of any candidate key) is functionally dependent on only a part of the primary key, rather than the entire primary key.
+
+#### Third Normal Form
+
+This is also, yet, an improvement of 2NF, where we ensure that all non-key attributes are not only fully functional on the primary key, but also independent of each other.
+
+This now eliminates transitive dependency.
+
+> **Transitive dependency:** is an indirect relationship between values in the same table that causes a functional dependency. This type of dependency occurs when one non-primary attribute depends on another non-primary attribute, which in turn depends on the primary key.
+
+Usually, normalization, in most practical situations, achieves its best in the **3<sup>rd</sup> Normal Form**.
+
+#### Boyce-Codd Normal Form
+
+Is an enhancement of 3NF, that fixes the anomalies not handled in 3NF.
+
+It requires every determinant to be a candidate key, ensuring that there's even stricter following of normalization rules.
+
+#### Fourth Normal Form
+
+This level of normalization addresses multi-valued dependencies.
+
+Here, we will ensure that there are no multiple independent multi-valued facts about an entity in a record.
+
+### FIfth Normal Form
+
+This is also known as `Projection-Join Normal Form`.because it is based on the re-construction of information from smaller, differently arranged data pieces.
+
+---
+
+## REFERENCES
+
+[Datacamp](https://www.datacamp.com/tutorial/normalization-in-sql)
+[Geek For Geeks](https://www.geeksforgeeks.org/acid-properties-in-dbms/)
+[MIT notes](https://www.cs.uct.ac.za/mit_notes/database/pdfs/chp08.pdf)
+[Relia Software](https://reliasoftware.com/blog/acid-properties-in-dbms)
+[Stack Overflow](https://stackoverflow.com/questions/11043712/non-repeatable-read-vs-phantom-read)
