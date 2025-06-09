@@ -141,3 +141,13 @@ COMMIT;
 
 - Scalability Difficulty, especially when it's a system with high volume rates.
 - Performance Overhead: it takes a lot of processing and expertise to enforce isolation and all the properties simultaneously.
+
+-------
+
+## NORMALIZATION IN DATABASES
+
+Normalization, is simply the process in which we get rid of redundancy in a database's tables/relations and columns.
+
+To achieve this we structure the data in such a way that attributes are grouped with the primary key that provides unique identification.
+
+**Un-normalized** data is usually a combo of a variety columns representing different entities, usually this can be quite disorganized, or too much information
