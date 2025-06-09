@@ -227,8 +227,12 @@ This is also known as `Projection-Join Normal Form`.because it is based on the r
 
 ## REFERENCES
 
-[Datacamp](https://www.datacamp.com/tutorial/normalization-in-sql)
+[DataCamp](https://www.datacamp.com/tutorial/normalization-in-sql)
+
 [Geek For Geeks](https://www.geeksforgeeks.org/acid-properties-in-dbms/)
+
 [MIT notes](https://www.cs.uct.ac.za/mit_notes/database/pdfs/chp08.pdf)
+
 [Relia Software](https://reliasoftware.com/blog/acid-properties-in-dbms)
+
 [Stack Overflow](https://stackoverflow.com/questions/11043712/non-repeatable-read-vs-phantom-read)
